@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html><title>SDSF interface</title>
+<meta charset="utf-8">
+<head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <style>
+          .scroll-top {
+             position: fixed;
+             bottom: 10px;
+             right: 10px;
+             z-index: 99;
+             background: red;
+             color: #fff;
+             border-radius: 30px;
+             padding: 15px;
+             font-weight: bold;
+             line-height: normal;
+             border: none;
+          }
+          .jumbotron {
+             padding-top: 10px !important;
+             padding-bottom: 10px !important;
+}
+        </style>
+        <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                $('.scroll-top').hide();
+                $(".scroll-top").click(function() {
+                    $("html, body").animate({
+                        scrollTop: 0
+                    }, "slow");
+                   return false;
+                });
+            });
+
+            var isVisible = false;
+            $(window).scroll(function(){
+                 var shouldBeVisible = $(window).scrollTop()>150;
+                 if (shouldBeVisible && !isVisible) {
+                     isVisible = true;
+                     $('.scroll-top').show();
+                 } else if (isVisible && !shouldBeVisible) {
+                      isVisible = false;
+                     $('.scroll-top').hide();
+                 }
+            });
+
+            var sdsfTable;
+            var saveTextContent;
+
+            function getPanel (panel, btn) {
+               saveTextContent = btn.innerHTML;
+               btn.innerHTML = '<span class=\"spinner-border spinner-border-sm\"></span>';
+               btn.innerHTML += " Loading... ";
+               btn.innerHTML += saveTextContent;
+               $('#selected').html('<h3>'+saveTextContent+'</h3>');
+               $('#sdsf thead').empty();
+               $('#sdsf tbody').empty();
+               $.ajax({url:'./sdsfTutosys.html?panel='+panel, success: function(data){
+                   try {
+                       var resultJson = JSON.parse(data);
+                       var columnsSdsf = Object.keys(resultJson[0]);
+                       var i, ii;
+                       var elem = '<tr>';
+                       for (i = 0; i < columnsSdsf.length; i++) {
+                           if (columnsSdsf[i] != 'TOKEN') {
+                               elem += '<th class="sticky-top" style="top: 35px;">' + columnsSdsf[i] + '</th>';
+                           };
+                       };
+                       elem += '</tr>';
+                       $('#sdsf thead').append(elem);
+                       for (i = 0; i < resultJson.length; i++) {
+                           elem = '<tr>';
+                           for (ii = 0;ii < columnsSdsf.length; ii++) {
+                               if (columnsSdsf[ii] != 'TOKEN') {
+                                   elem += '<td>' + resultJson[i][columnsSdsf[ii]] + '</td>';
+                               };
+                           };
+                           elem += '</tr>';
+                           $('#sdsf tbody').append(elem);
+                        }
+                    }
+                   catch(err) {
+                      alert(err.message);
+                    };
+                    btn.innerHTML = saveTextContent
+                }});
+            };
+        </script>
+        <title>SDSF</title>
+        </head>
+        <body>
+          <button class="scroll-top">Go to Top</button>
+          <div class="container-fluid">
+              <div class="jumbotron text-center mb-1">
+                <h1>Tutosys SDSF infoserver</h1>
+                <p>Powered by Node.js, Zowe CLI and TSO SDSF REXX.</p>
+              </div>
+              <div class="text-center mb-1">
+                  <button id="btnRM" onclick="getPanel('RM', this)" class="btn btn-primary">
+                     Resource monitor</button>
+                  <button id="btnPROC" onclick="getPanel('PROC', this)" class="btn btn-primary">
+                     Proclib datasets</button>
+                  <button id="btnPARM" onclick="getPanel('PARM', this)" class="btn btn-primary">
+                     Parmlib datasets</button>
+                  <button id="btnLNK" onclick="getPanel('LNK', this)" class="btn btn-primary">
+                     Linklist</button>
+                  <button id="btnSYM" onclick="getPanel('SYM', this)" class="btn btn-primary">
+                     System symbols</button>
+                  <button id="btnLPA" onclick="getPanel('LPA', this)" class="btn btn-primary">
+                     LPA</button>
+              </div>
+              <div id="selected" class="sticky-top text-white bg-dark"></div>
+              <div class="justify-content-center">
+                 <table id="sdsf" class="table table-bordered table-hover table-condensed table-sm">
+                     <thead class="thead-dark">
+                     </thead>
+                     <tbody>
+                     </tbody>
+                 </table>
+              </div>
+          </div>
+        </body>
+    </html>
