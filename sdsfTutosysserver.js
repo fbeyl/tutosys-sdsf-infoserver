@@ -2,8 +2,12 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const { exec } = require('child_process');
-const acceptedPanels = ['RM', 'PROC', 'PARM', 'LNK', 'SYM', 'LPA' ];
-const interval = 120000;
+const acceptedPanels = [
+                        'VMAP', 'AS',
+                        'RM', 'PROC', 'PARM', 'LNK', 'SYM',
+                        'LPA', 'FS', 'ENQ', 'SYS', 'ENC'
+                       ];
+const interval = 180000;
 //const interval = 10000;
 var tsosessionid = '';
 var tsopinginterval = null;
@@ -12,6 +16,9 @@ http.createServer(function (req, res) {
   handleRequest (req, res)
   }).listen(8080);
 
+//  if (tsosessionid == '') {
+    createTsosession();
+//  };
 console.log('Listening on port 8080');
 
 function createTsosession () {
@@ -41,7 +48,7 @@ function pingTsosession () {
         console.log('Error pinging ' + tsosessionid);
       };
       if (stdout) {
-        console.log(stdout);
+        console.log(stdout.substr(0,stdout.length-1));
       };
       if (stderr) {
         console.log(stderr);
@@ -91,9 +98,6 @@ function handleRequest(req, res) {
       if (err) {
         res.writeHead(404, {'Content-Type': 'text/html'});
         return res.end("404 Not Found");
-      }
-      if (tsosessionid == '') {
-        createTsosession();
       };
       res.writeHead(200, {'Content-Type': 'text/html'});
       res.write(data);
@@ -106,7 +110,7 @@ function handleRequest(req, res) {
     zowecmd = zowecmd + tsosessionid;
     zowecmd = zowecmd + '" --data "ex (panel) \'';
     zowecmd = zowecmd + qdata.panel;
-    zowecmd = zowecmd + ' \'"';
+    zowecmd = zowecmd + '\'"';
     processZowe (zowecmd, res);
     } else {
       res.writeHead(400, {'Content-Type': 'text/html'});
