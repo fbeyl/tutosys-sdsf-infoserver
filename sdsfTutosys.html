@@ -19,7 +19,12 @@
     <script>
         var sdsfTable;
         $(document).ready(function(){
-            sdsfTable = $('#sdsf').DataTable();
+            sdsfTable = $('#sdsf').DataTable({
+                                            scrollY: '60vh',
+                                            scrollCollapse: true,
+                                            paging: false,
+                                            order: [ ]
+                                            });
         });
 
         var isVisible = false;
@@ -47,7 +52,7 @@
                        };
                    };
                    elem += '</tr>';
-                   var firstrow = '<tr><th colspan="'+i+'">'+saveTextContent+'</th></tr>';
+                   var firstrow = '<tr><th class="text-nowrap">'+saveTextContent+'</th></tr>';
                    $('#sdsf thead').append(firstrow);
                    $('#sdsf thead').append(elem);
                    for (i = 0; i < resultJson.length; i++) {
@@ -61,6 +66,7 @@
                        $('#sdsf tbody').append(elem);
                     };
                     sdsfTable = $('#sdsf').DataTable({
+                                            scrollX: true,
                                             scrollY: '60vh',
                                             scrollCollapse: true,
                                             paging: false,
@@ -83,26 +89,28 @@
           <p>Powered by Node.js http, Zowe CLI and z/OSMF-TSO-REXX-SDSF.</p>
         </div>
         <div id="choices" class="text-center mb-1">
-            <button id="btnRM" onclick="getPanel('RM', this)" class="btn btn-primary">
-               Resource monitor</button>
-            <button id="btnPROC" onclick="getPanel('PROC', this)" class="btn btn-primary">
-               Proclib datasets</button>
-            <button id="btnPARM" onclick="getPanel('PARM', this)" class="btn btn-primary">
-               Parmlib datasets</button>
-            <button id="btnLNK" onclick="getPanel('LNK', this)" class="btn btn-primary">
-               Linklist</button>
-            <button id="btnSYM" onclick="getPanel('SYM', this)" class="btn btn-primary">
-               System symbols</button>
-            <button id="btnVMAP" onclick="getPanel('VMAP', this)" class="btn btn-primary">
-               Virtual Storage Map</button>
             <button id="btnAS" onclick="getPanel('AS', this)" class="btn btn-primary">
-               Address Space Memory</button>
-            <button id="btnFS" onclick="getPanel('FS', this)" class="btn btn-primary">
-               File Systems</button>
+                Address Space Memory</button>
+            <button id="btnENC" onclick="getPanel('ENC', this)" class="btn btn-primary">
+                Enclaves</button>
             <button id="btnENQ" onclick="getPanel('ENQ', this)" class="btn btn-primary">
-               Enqueues</button>
-            <button id="btnSYS" onclick="getPanel('ENC', this)" class="btn btn-primary">
-               Enclaves</button>
+                Enqueues</button>
+            <button id="btnFS" onclick="getPanel('FS', this)" class="btn btn-primary">
+                File Systems</button>
+            <button id="btnLNK" onclick="getPanel('LNK', this)" class="btn btn-primary">
+                Linklist</button>
+            <button id="btnPARM" onclick="getPanel('PARM', this)" class="btn btn-primary">
+                Parmlib datasets</button>
+            <button id="btnPROC" onclick="getPanel('PROC', this)" class="btn btn-primary">
+                Proclib datasets</button>
+            <button id="btnRM" onclick="getPanel('RM', this)" class="btn btn-primary">
+                Resource monitor</button>
+            <button id="btnST" onclick="getPanel('ST', this)" class="btn btn-primary">
+                Status of jobs</button>
+            <button id="btnSYM" onclick="getPanel('SYM', this)" class="btn btn-primary">
+                System symbols</button>
+            <button id="btnVMAP" onclick="getPanel('VMAP', this)" class="btn btn-primary">
+                Virtual Storage Map</button>
         </div>
         <div class="justify-content-*-center">
            <table id="sdsf" class="table table-bordered table-hover table-sm">

@@ -3,7 +3,7 @@ const url = require('url');
 const fs = require('fs');
 const { exec } = require('child_process');
 const acceptedPanels = [
-                        'VMAP', 'AS',
+                        'VMAP', 'AS', 'ST',
                         'RM', 'PROC', 'PARM', 'LNK', 'SYM',
                         'LPA', 'FS', 'ENQ', 'SYS', 'ENC'
                        ];
