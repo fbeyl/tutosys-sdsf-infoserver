@@ -10,6 +10,9 @@
            padding-top: 5px !important;
            padding-bottom: 1px !important;
         }
+        .dataTables_scroll {
+           margin: 0 auto;
+        }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -36,12 +39,12 @@
            btn.innerHTML = '<span class=\"spinner-border spinner-border-sm\"></span>';
            btn.innerHTML += " Loading... ";
            btn.innerHTML += saveTextContent;
-           sdsfTable.destroy();
-           $('#sdsf thead').empty();
-           $('#sdsf tbody').empty();
 
            $.ajax({url:'./sdsfTutosys.html?panel='+panel, success: function(data){
                try {
+                   sdsfTable.destroy();
+                   $('#sdsf thead').empty();
+                   $('#sdsf tbody').empty();
                    var resultJson = JSON.parse(data);
                    var columnsSdsf = Object.keys(resultJson[0]);
                    var i, ii;
@@ -105,15 +108,15 @@
                 Proclib datasets</button>
             <button id="btnRM" onclick="getPanel('RM', this)" class="btn btn-primary">
                 Resource monitor</button>
-            <button id="btnST" onclick="getPanel('ST', this)" class="btn btn-primary">
+            <button id="btnST" onclick="getPanel('ST Z40275*', this)" class="btn btn-primary">
                 Status of jobs</button>
             <button id="btnSYM" onclick="getPanel('SYM', this)" class="btn btn-primary">
                 System symbols</button>
             <button id="btnVMAP" onclick="getPanel('VMAP', this)" class="btn btn-primary">
                 Virtual Storage Map</button>
         </div>
-        <div class="justify-content-*-center">
-           <table id="sdsf" class="table table-bordered table-hover table-sm">
+        <div class="center-block">
+           <table id="sdsf" class="table table-bordered table-hover table-sm" style="width: 100%">
                <thead class="thead-dark text-center">
                    <tr><td></td></tr>
                </thead>

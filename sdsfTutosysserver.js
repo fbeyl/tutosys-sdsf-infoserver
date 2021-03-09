@@ -3,7 +3,7 @@ const url = require('url');
 const fs = require('fs');
 const { exec } = require('child_process');
 const acceptedPanels = [
-                        'VMAP', 'AS', 'ST',
+                        'VMAP', 'AS', 'ST Z40275*',
                         'RM', 'PROC', 'PARM', 'LNK', 'SYM',
                         'LPA', 'FS', 'ENQ', 'SYS', 'ENC'
                        ];
@@ -82,16 +82,7 @@ function processZowe (func, res) {
 function handleRequest(req, res) {
   var q = url.parse(req.url, true);
   var filename = "." + q.pathname;
-
-//  console.log(q.host);
-//  console.log(q.pathname);
-//  console.log(q.search);
-  var qdata = q.query; //returns an object: { year: 2017, month: 'february' }
-//  console.log(JSON.stringify(qdata));
-
-//  console.log(`${filename}`);
-
-//  if (filename == './exampleTutosys.html'||filename == './favicon.ico') {
+  var qdata = q.query;
   if (( q.search.length == 0 )
   &&  (q.pathname == '/sdsfTutosys.html' || q.pathname == '/favicon.ico' || q.pathname == '/sdsfTutosys.css')) {
     fs.readFile('.' + q.pathname, function(err, data) {
