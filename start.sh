@@ -2,4 +2,3 @@
 
 cd ~/Documenten/tutosys;
 node sdsfTutosysserver;
-return

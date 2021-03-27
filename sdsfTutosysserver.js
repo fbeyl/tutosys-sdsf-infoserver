@@ -3,7 +3,7 @@ const url = require('url');
 const fs = require('fs');
 const { exec } = require('child_process');
 const acceptedPanels = [
-                        'VMAP', 'AS', 'ST Z40275*',
+                        'VMAP', 'AS', 'ST',
                         'RM', 'PROC', 'PARM', 'LNK', 'SYM',
                         'LPA', 'FS', 'ENQ', 'SYS', 'ENC'
                        ];
@@ -22,16 +22,30 @@ http.createServer(function (req, res) {
 console.log('Listening on port 8080');
 
 function createTsosession () {
-  exec('zowe zos-tso start address-space --zosmf-profile "tutosys" --sko', (err, stdout, stderr) => {
+  exec('zowex zos-tso start address-space --zosmf-profile "tutosys" --sko', (err, stdout, stderr) => {
     if (err) {
       console.log('Error start Tso session');
     };
     if (stdout) {
       tsosessionid = stdout.substr(0,stdout.length-1);
       console.log('Tso sessionid : ' + tsosessionid);
-      tsopinginterval = setInterval(function(){
-                          pingTsosession ();
-                          }, interval);
+      var secondfunc = 'zowex zos-tso send address-space "';
+      secondfunc = secondfunc + tsosessionid+'"';
+      secondfunc = secondfunc + ' --data "\\"ex (PANELSRV)\\""';
+      console.log (`zowecmd: ${secondfunc}`);
+      exec(secondfunc, {maxBuffer : 1024 * 1024} , (seconderr, secondstdout, secondstderr) => {
+        if (seconderr) {
+          console.log('zowex error func 2'+secondstderr);
+        };
+        if (secondstdout) {
+          if (secondstdout.indexOf("PANELSRV started")>-1) {
+            console.log('PANELSRV started');
+            tsopinginterval = setInterval(function(){
+                                pingTsosession ();
+                              }, interval);
+          };
+        };
+      });
     };
     if (stderr) {
       console.log(stderr);
@@ -40,7 +54,7 @@ function createTsosession () {
 };
 
 function pingTsosession () {
-    zowecmd = 'zowe zos-tso ping address-space "';
+    zowecmd = 'zowex zos-tso ping address-space "';
     zowecmd = zowecmd + tsosessionid;
     zowecmd = zowecmd + '"';
     exec(zowecmd, (err, stdout, stderr) => {
@@ -56,18 +70,42 @@ function pingTsosession () {
     });
   };
 
-function processZowe (func, res) {
-  console.log (`zowecmd: ${func}`);
-  exec(func, {maxBuffer : 1024 * 1024} , (err, stdout, stderr) => {
+function processZowe (zowecmd, func, res) {
+  console.log (`zowecmd: ${zowecmd}`);
+  exec(zowecmd, {maxBuffer : 1024 * 1024} , (err, stdout, stderr) => {
     if (err) {
-      console.log('zowe error');
+      console.log('zowex error');
     };
     if (stdout) {
-      var result = stdout.substring(0,stdout.length-8);
-//      console.log(result);
-      res.writeHead(200, {'Content-Type': 'text/html'});
-      res.write(result);
-      return res.end();
+      console.log(stdout);
+      if (stdout.indexOf("SDSF output created!")>-1) {
+        var secondfunc = "zowex zos-files download data-set ";
+        secondfunc = secondfunc+'"Z40275.SDSFSERV.OUTPUT.PDSE('+func+')"';
+        console.log (`zowecmd: ${secondfunc}`);
+        exec(secondfunc, {maxBuffer : 1024 * 1024} , (seconderr, secondstdout, secondstderr) => {
+          if (seconderr) {
+            console.log('zowex error func 2'+secondstderr);
+          };
+          if (secondstdout) {
+            if (secondstdout.indexOf("Data set downloaded successfully")>-1) {
+              console.log('zowex download done '+func);
+              var filename = "z40275/sdsfserv/output/pdse/"+func.toLowerCase()+".txt"
+              fs.readFile('./' + filename, function(err, data) {
+                if (err) {
+                  res.writeHead(404, {'Content-Type': 'text/html'});
+                  return res.end("404 Not Found");
+                };
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.write(data);
+                return res.end();
+               })
+            }
+          }
+        })
+      }
+      else {
+        console.log(stderr);
+      };
     };
     if (stderr) {
       console.log(stderr);
@@ -97,12 +135,10 @@ function handleRequest(req, res) {
   } else if ((q.pathname == '/sdsfTutosys.html')
          &&  (q.search.length > 0 )
          &&  (acceptedPanels.indexOf(qdata.panel)) > -1) {
-    zowecmd = 'zowe zos-tso send address-space "';
-    zowecmd = zowecmd + tsosessionid;
-    zowecmd = zowecmd + '" --data "ex (panel) \'';
-    zowecmd = zowecmd + qdata.panel;
-    zowecmd = zowecmd + '\'"';
-    processZowe (zowecmd, res);
+    zowecmd = 'zowex zos-tso send address-space "';
+    zowecmd = zowecmd + tsosessionid+'"';
+    zowecmd = zowecmd + ' --data "' + qdata.panel + '"';
+    processZowe (zowecmd, qdata.panel, res);
     } else {
       res.writeHead(400, {'Content-Type': 'text/html'});
       return res.end("400 Invalid Request");
