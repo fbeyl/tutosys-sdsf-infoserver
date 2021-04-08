@@ -1,0 +1,64 @@
+/*REXX*****************************************************************/
+/*                                                                    */
+/* Write panel data to member in Z40275.SDSFSERV.OUTPUT               */
+/*                                                                    */
+/**********************************************************************/
+/* trace r */
+RC        = ISFCALLS("ON")  /* Create SDSF host command environment */
+IF RC <> 0 THEN do
+   say '{"Message":"PANELSRV error!"}'
+   return 16
+end
+ISFSECTRACE = "ON"
+ISFOWNER = "*"
+ISFPREFIX = "*"
+ISFJESNAME = "JES2"
+say '{"Message":"PANELSRV started!"}'
+
+PULL PanelName
+do while PanelName \= 'STOP'
+  call getpanel
+  PULL PanelName
+end
+
+RC = ISFCALLS("OFF") /* Delete SDSF host command environment */
+say '{"Message":"PANELSRV stopped!"}'
+return RC
+
+getpanel:
+drop isfrows isfcols
+ADDRESS SDSF "ISFEXEC "||PanelName /* Panel SDSF command PS  */
+IF RC <> 0 THEN do          /* Abord if problem                     */
+   say '{"Message":"SDSF error!"}'
+   return
+end
+DROP DATA. ox ix jx
+ox=1
+DATA. = ''
+DATA.ox='['
+ox=ox+1
+do ix=1 to isfrows
+  if (ix > 1) then do
+                   DATA.ox = DATA.ox || ', '
+                   ox=ox+1
+                 end
+  DATA.ox = DATA.ox || '{'
+          /* List all columns for row */
+  do jx=1 to words(isfcols)
+    if jx > 1 then do
+                     DATA.ox = DATA.ox || ', '
+                   end
+    col = word(isfcols,jx)
+    DATA.ox = DATA.ox || '"' || col || '":"' || VALUE(col"."ix) || '"'
+  end
+  DATA.ox = DATA.ox || '}'
+end
+ox=ox+1
+DATA.ox=']'
+dsnname = 'Z40275.SDSFSERV.OUTPUT.PDSE' || '(' || PanelName || ')'
+"ALLOC DA('"dsnname"') F(LOGICAL) SHR"
+"EXECIO "ox" DISKW LOGICAL (STEM DATA. FINIS"
+"FREE F(LOGICAL)"
+
+say '{"Message":"SDSF output created!"}'
+return
