@@ -12,7 +12,7 @@ This example consists of following parts:
 1) Browser page 'sdsfTutosys.html' using bootstrap 4, jQuery and  datatables (https://github.com/DataTables/DataTables)
 2) Local node http server 'sdsfTutosysserver.js'
   - Serves the html 'sdsfTutosys.html' file + eventual 'favicon.ico' file + eventual sdsfTutosys.css file
-  - Translates requests from the browser page to zowe cli commands and executes them as 'child_process' nd creates response from zowe-cli stdout
-3) Access to IBM's zowe tutorial system with rexx member 'panelsrv' in pds 'z40275.clist(panelsrv)'.
+  - Receives 'button-click-triggered' requests from 'sdsfTutosys.html', translates them into zowe cli commands, executes these in 'child_process' and finally creates the response using zowe-cli stdout contents
+3) Rexx in pds 'z40275.clist(panelsrv)' on IBM's zowe tutorial system.
 
-.sh files contain start command
+( .sh files contain local start command )
