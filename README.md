@@ -13,6 +13,16 @@ This example consists of following parts:
 2) Local node http server 'sdsfTutosysserver.js'
   - Serves the html 'sdsfTutosys.html' file + eventual 'favicon.ico' file + eventual sdsfTutosys.css file
   - Receives 'button-click-triggered' requests from 'sdsfTutosys.html', translates them into zowe cli commands, executes these in 'child_process' and finally creates the response using zowe-cli stdout contents
-3) Rexx in pds 'z40275.clist(panelsrv)' on IBM's zowe tutorial system.
+3) Rexx in pds 'Z40275.CLIST(PANELSRV)' on IBM's zowe tutorial system.
+4) PDSE to contain output from sdsf panels
+    Data Set Name  . . . : Z40275.SDSFSERV.OUTPUT.PDSE
+    Organization  . . . : PO
+    Record format . . . : VB
+    Record length . . . : 27644
+    Block size  . . . . : 27648
+    1st extent tracks . : 15
+    Secondary tracks  . : 5
+    Data set name type  : LIBRARY
+
 
 ( .sh files contain local start command )
