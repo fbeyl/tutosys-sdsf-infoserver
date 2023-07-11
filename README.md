@@ -12,6 +12,7 @@ This example consists of following parts:
 1) Browser page 'sdsfTutosys.html' using bootstrap 4, jQuery and  datatables (https://github.com/DataTables/DataTables)
 2) Local node http server 'sdsfTutosysserver.js'
   - Serves the html 'sdsfTutosys.html' file + eventual 'favicon.ico' file + eventual sdsfTutosys.css file
+  - starts tso session + keeps it alive
   - Receives 'button-click-triggered' requests from 'sdsfTutosys.html', translates them into zowe cli commands, executes these in 'child_process' and finally creates the response using zowe-cli stdout contents
 3) Rexx in pds 'Z40275.CLIST(PANELSRV)' on IBM's zowe tutorial system.
 4) PDSE to contain output from sdsf panels
